@@ -129,11 +129,17 @@
       font-size: 1.5em;
       line-height: 40px;
       text-align: center;
-      transition: color 0.3s;
+      transition: color 0.3s, background-color 0.3s;
+      border-radius: 50%;
     }
 
     .timer-control:hover {
       color: #c1272d;
+    }
+
+    .timer-control.active {
+      background-color: #e52a36;
+      color: #fff;
     }
 
     /* Progress Bar Styles */
@@ -180,7 +186,6 @@
       </div>
     </div>
   </div>
-
   <script>
     // List of departments
     const departments = [
@@ -201,7 +206,7 @@
       "Cybersecurity",
       "PMO",
     ];
-
+  
     const mainBody = document.getElementById("mainContent");
     const generateButton = document.getElementById("generateButton");
     const timerElement = document.getElementById("timer");
@@ -209,30 +214,33 @@
     const departmentElement = document.querySelector(".department");
     const startTimerButton = document.getElementById("startTimer");
     const pauseTimerButton = document.getElementById("pauseTimer");
-
+  
     let countdownInterval;
     let remainingTime = 3 * 60; // 3 minutes in seconds
     let timerPaused = false;
-
+  
     // Function to generate and display a department
     function generateDepartment() {
       if (departments.length === 0) {
         alert("No more departments left to choose from.");
         return;
       }
-
+  
+      // Reset timer and button states when generating a new department
+      resetTimer();
+  
       // Rapidly change the department name
       let i = 0;
       const maxIterations = 30; // Adjust this to control the speed of text change
-
+  
       const intervalId = setInterval(() => {
         const pointer = Math.floor(Math.random() * departments.length);
         departmentElement.innerText = departments[pointer];
         i++;
-
+  
         if (i >= maxIterations) {
           clearInterval(intervalId);
-
+  
           // Select the final department
           const selectedPointer = Math.floor(Math.random() * departments.length);
           const selectedDepartment = departments.splice(selectedPointer, 1)[0];
@@ -240,7 +248,7 @@
         }
       }, 100); // Change text every 100ms
     }
-
+  
     // Function to start or resume the countdown timer
     function startCountdown() {
       if (!timerPaused) {
@@ -248,38 +256,63 @@
         clearInterval(countdownInterval); // Clear any existing interval
       }
       timerPaused = false;
-
+  
       countdownInterval = setInterval(function () {
         let minutes = Math.floor(remainingTime / 60);
         let seconds = remainingTime % 60;
-
+  
         minutes = minutes < 10 ? `0${minutes}` : minutes;
         seconds = seconds < 10 ? `0${seconds}` : seconds;
-
+  
         timerElement.textContent = `Time Remaining: ${minutes}:${seconds}`;
-
+  
         // Update the progress bar width
         const progressPercentage = (remainingTime / (3 * 60)) * 100;
         progressBar.style.width = `${progressPercentage}%`;
-
+  
         if (--remainingTime < 0) {
           clearInterval(countdownInterval);
           timerElement.textContent = "Time's up!";
           progressBar.style.width = "0%"; // Ensure the bar is completely empty when time's up
+          updateTimerControlStates();
         }
       }, 1000);
+  
+      updateTimerControlStates();
     }
-
+  
     // Function to pause the countdown timer
     function pauseCountdown() {
       clearInterval(countdownInterval);
       timerPaused = true;
+      updateTimerControlStates();
     }
-
-    // Add event listener to the button
+  
+    // Function to reset the timer
+    function resetTimer() {
+      clearInterval(countdownInterval);
+      timerPaused = false;
+      remainingTime = 3 * 60; // Reset time to 3 minutes
+      timerElement.textContent = `Time Remaining: 03:00`;
+      progressBar.style.width = "100%"; // Reset progress bar to full
+  
+      // Forcefully remove highlights from both buttons
+      startTimerButton.classList.remove("active");
+      pauseTimerButton.classList.remove("active");
+    }
+  
+    // Function to update the timer control states
+    function updateTimerControlStates() {
+      const isTimerActive = remainingTime > 0 && !timerPaused;
+      startTimerButton.classList.toggle("active", isTimerActive);
+      pauseTimerButton.classList.toggle("active", timerPaused);
+    }
+  
+    // Add event listeners
     generateButton.addEventListener("click", generateDepartment);
     startTimerButton.addEventListener("click", startCountdown);
     pauseTimerButton.addEventListener("click", pauseCountdown);
   </script>
+  
 </body>
 </html>
