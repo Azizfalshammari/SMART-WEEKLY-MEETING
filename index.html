@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Department Picker</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
   <style>
     /* Global Styles */
     body {
@@ -31,7 +32,7 @@
       text-align: center;
       display: flex;
       flex-direction: column;
-      position: relative; /* Add relative positioning for the button */
+      position: relative; /* Add relative positioning for the buttons */
     }
 
     /* Logo Styles */
@@ -104,7 +105,6 @@
       opacity: 0;
       transform: translateY(-20px);
       animation: fadeInUp 1s forwards 0.5s;
-      cursor: pointer;
     }
 
     @keyframes fadeInUp {
@@ -112,6 +112,28 @@
         opacity: 1;
         transform: translateY(0);
       }
+    }
+
+    /* Timer Control Button Styles */
+    .timer-controls {
+      margin-top: 20px;
+    }
+
+    .timer-control {
+      display: inline-block;
+      width: 40px;
+      height: 40px;
+      margin: 0 10px;
+      cursor: pointer;
+      color: #e52a36;
+      font-size: 1.5em;
+      line-height: 40px;
+      text-align: center;
+      transition: color 0.3s;
+    }
+
+    .timer-control:hover {
+      color: #c1272d;
     }
 
     /* Progress Bar Styles */
@@ -131,41 +153,31 @@
       width: 100%; /* Initially full */
       transition: width 1s linear;
     }
-
-    /* Restart Button Styles */
-    .restart-button {
-      position: absolute;
-      top: 20px;
-      right: 20px;
-      background: none;
-      border: none;
-      cursor: pointer;
-      font-size: 1.5em;
-      color: #e52a36;
-      transition: color 0.3s;
-    }
-
-    .restart-button:hover {
-      color: #c1272d;
-    }
   </style>
 </head>
 <body>
   <div id="container">
-    <button class="restart-button" id="restartButton">&#x21bb;</button>
     <img
       id="logo"
       src="https://smart.sa/wp-content/themes/twentynineteen-child/assets/images/logo.png"
       alt="Logo"
     />
-    <h2>Department Picker</h2>
+    <h2>SMART Weekly Meeting</h2>
     <div id="mainContent">
       <div class="department">The Department</div>
     </div>
-    <button class="button" id="generateButton">Are you ready?</button>
-    <div id="timer">Start Time: 03:00</div>
+    <button class="button" id="generateButton">Find Speaker</button>
+    <div id="timer">Remaining Time: 03:00</div>
     <div class="progress-bar">
       <div class="progress"></div>
+    </div>
+    <div class="timer-controls">
+      <div class="timer-control" id="startTimer" title="Start Timer">
+        <i class="fas fa-play"></i>
+      </div>
+      <div class="timer-control" id="pauseTimer" title="Pause Timer">
+        <i class="fas fa-pause"></i>
+      </div>
     </div>
   </div>
 
@@ -195,10 +207,12 @@
     const timerElement = document.getElementById("timer");
     const progressBar = document.querySelector(".progress");
     const departmentElement = document.querySelector(".department");
-    const restartButton = document.getElementById("restartButton");
+    const startTimerButton = document.getElementById("startTimer");
+    const pauseTimerButton = document.getElementById("pauseTimer");
+
     let countdownInterval;
-    let timer = 3 * 60; // 3 minutes in seconds
-    let timerStarted = false;
+    let remainingTime = 3 * 60; // 3 minutes in seconds
+    let timerPaused = false;
 
     // Function to generate and display a department
     function generateDepartment() {
@@ -225,57 +239,47 @@
           departmentElement.innerText = `Department: ${selectedDepartment}`;
         }
       }, 100); // Change text every 100ms
-
-      // Reset the timer but do not start it
-      timer = 3 * 60;
-      updateTimerDisplay();
     }
 
-    // Function to start the countdown timer
+    // Function to start or resume the countdown timer
     function startCountdown() {
-      if (!timerStarted) {
-        timerStarted = true;
-        countdownInterval = setInterval(function () {
-          let minutes = Math.floor(timer / 60);
-          let seconds = timer % 60;
-
-          minutes = minutes < 10 ? `0${minutes}` : minutes;
-          seconds = seconds < 10 ? `0${seconds}` : seconds;
-
-          timerElement.textContent = `Time Remaining: ${minutes}:${seconds}`;
-
-          // Update the progress bar width
-          const progressPercentage = (timer / (3 * 60)) * 100;
-          progressBar.style.width = `${progressPercentage}%`;
-
-          if (--timer < 0) {
-            clearInterval(countdownInterval);
-            timerElement.textContent = "Time's up!";
-            progressBar.style.width = "0%"; // Ensure the bar is completely empty when time's up
-            timerStarted = false;
-          }
-        }, 1000);
+      if (!timerPaused) {
+        remainingTime = 3 * 60; // Reset time to 3 minutes
+        clearInterval(countdownInterval); // Clear any existing interval
       }
+      timerPaused = false;
+
+      countdownInterval = setInterval(function () {
+        let minutes = Math.floor(remainingTime / 60);
+        let seconds = remainingTime % 60;
+
+        minutes = minutes < 10 ? `0${minutes}` : minutes;
+        seconds = seconds < 10 ? `0${seconds}` : seconds;
+
+        timerElement.textContent = `Time Remaining: ${minutes}:${seconds}`;
+
+        // Update the progress bar width
+        const progressPercentage = (remainingTime / (3 * 60)) * 100;
+        progressBar.style.width = `${progressPercentage}%`;
+
+        if (--remainingTime < 0) {
+          clearInterval(countdownInterval);
+          timerElement.textContent = "Time's up!";
+          progressBar.style.width = "0%"; // Ensure the bar is completely empty when time's up
+        }
+      }, 1000);
     }
 
-    // Function to update timer display without starting the countdown
-    function updateTimerDisplay() {
-      let minutes = Math.floor(timer / 60);
-      let seconds = timer % 60;
-      minutes = minutes < 10 ? `0${minutes}` : minutes;
-      seconds = seconds < 10 ? `0${seconds}` : seconds;
-      timerElement.textContent = `Time Remaining: ${minutes}:${seconds}`;
-      progressBar.style.width = `${(timer / (3 * 60)) * 100}%`;
+    // Function to pause the countdown timer
+    function pauseCountdown() {
+      clearInterval(countdownInterval);
+      timerPaused = true;
     }
 
-    // Add event listeners
+    // Add event listener to the button
     generateButton.addEventListener("click", generateDepartment);
-    timerElement.addEventListener("click", startCountdown);
-    restartButton.addEventListener("click", () => {
-      // Reset the timer to 3 minutes and update the display
-      timer = 3 * 60;
-      updateTimerDisplay();
-    });
+    startTimerButton.addEventListener("click", startCountdown);
+    pauseTimerButton.addEventListener("click", pauseCountdown);
   </script>
 </body>
 </html>
