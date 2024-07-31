@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Department Picker</title>
+  <style>
+    /* Global Styles */
+    body {
+      font-family: Arial, sans-serif;
+      background-image: url("./image.png");
+      background-repeat: no-repeat;
+      display: flex;
+      backdrop-filter: blur(2px);
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      width: 100vw;
+      margin: 0;
+    }
+
+    /* Container Styles */
+    #container {
+      max-width: 600px;
+      width: 100%;
+      padding: 40px;
+      background-color: #fff;
+      border-radius: 10px;
+      border: 1px solid #e52a36;
+      box-shadow: 0px 0px 50px rgba(0, 0, 0, 0.1);
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      position: relative; /* Add relative positioning for the button */
+    }
+
+    /* Logo Styles */
+    #logo {
+      max-width: 100px;
+      margin: 0 auto;
+      display: block;
+    }
+
+    /* Department Styles */
+    .department {
+      font-size: 1.5em;
+      font-weight: bold;
+      color: #337ab7;
+      margin-bottom: 20px;
+    }
+
+    /* Button Styles */
+    .button {
+      display: inline-block;
+      padding: 0.75rem 1.25rem;
+      border-radius: 10rem;
+      color: #fff;
+      text-transform: uppercase;
+      font-size: 1rem;
+      letter-spacing: 0.15rem;
+      transition: all 0.3s;
+      position: relative;
+      overflow: hidden;
+      z-index: 1;
+    }
+
+    .button:after {
+      content: "";
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: #e52a36;
+      z-index: -2;
+    }
+
+    .button:before {
+      content: "";
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 0%;
+      height: 100%;
+      background-color: #c1272d; /* Darkened color of #e52a36 */
+      transition: all 0.3s;
+      border-radius: 10rem;
+      z-index: -1;
+    }
+
+    .button:hover {
+      color: #fff;
+    }
+
+    .button:hover:before {
+      width: 100%;
+    }
+
+    /* Timer Styles */
+    #timer {
+      font-size: 1.5em;
+      color: #e52a36;
+      margin-top: 20px;
+      opacity: 0;
+      transform: translateY(-20px);
+      animation: fadeInUp 1s forwards 0.5s;
+      cursor: pointer;
+    }
+
+    @keyframes fadeInUp {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Progress Bar Styles */
+    .progress-bar {
+      width: 100%;
+      height: 10px;
+      background-color: #e0e0e0; /* Light gray background */
+      border-radius: 5px;
+      overflow: hidden;
+      margin-top: 10px;
+      position: relative;
+    }
+
+    .progress {
+      height: 100%;
+      background-color: #e52a36; /* Red color for the progress */
+      width: 100%; /* Initially full */
+      transition: width 1s linear;
+    }
+
+    /* Restart Button Styles */
+    .restart-button {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 1.5em;
+      color: #e52a36;
+      transition: color 0.3s;
+    }
+
+    .restart-button:hover {
+      color: #c1272d;
+    }
+  </style>
+</head>
+<body>
+  <div id="container">
+    <button class="restart-button" id="restartButton">&#x21bb;</button>
+    <img
+      id="logo"
+      src="https://smart.sa/wp-content/themes/twentynineteen-child/assets/images/logo.png"
+      alt="Logo"
+    />
+    <h2>Department Picker</h2>
+    <div id="mainContent">
+      <div class="department">The Department</div>
+    </div>
+    <button class="button" id="generateButton">Are you ready?</button>
+    <div id="timer">Start Time: 03:00</div>
+    <div class="progress-bar">
+      <div class="progress"></div>
+    </div>
+  </div>
+
+  <script>
+    // List of departments
+    const departments = [
+      "People & Culture",
+      "Finance Team",
+      "Cloud Team",
+      "Procurement Team",
+      "Software Team",
+      "IT Service Team",
+      "EdIT Team",
+      "Business Excellence Team",
+      "Marketing Team",
+      "Mohammed Hassen (COO)",
+      "Albara",
+      "Sales Team",
+      "Business Application",
+      "IT Project",
+      "Cybersecurity",
+      "PMO",
+    ];
+
+    const mainBody = document.getElementById("mainContent");
+    const generateButton = document.getElementById("generateButton");
+    const timerElement = document.getElementById("timer");
+    const progressBar = document.querySelector(".progress");
+    const departmentElement = document.querySelector(".department");
+    const restartButton = document.getElementById("restartButton");
+    let countdownInterval;
+    let timer = 3 * 60; // 3 minutes in seconds
+    let timerStarted = false;
+
+    // Function to generate and display a department
+    function generateDepartment() {
+      if (departments.length === 0) {
+        alert("No more departments left to choose from.");
+        return;
+      }
+
+      // Rapidly change the department name
+      let i = 0;
+      const maxIterations = 30; // Adjust this to control the speed of text change
+
+      const intervalId = setInterval(() => {
+        const pointer = Math.floor(Math.random() * departments.length);
+        departmentElement.innerText = departments[pointer];
+        i++;
+
+        if (i >= maxIterations) {
+          clearInterval(intervalId);
+
+          // Select the final department
+          const selectedPointer = Math.floor(Math.random() * departments.length);
+          const selectedDepartment = departments.splice(selectedPointer, 1)[0];
+          departmentElement.innerText = `Department: ${selectedDepartment}`;
+        }
+      }, 100); // Change text every 100ms
+
+      // Reset the timer but do not start it
+      timer = 3 * 60;
+      updateTimerDisplay();
+    }
+
+    // Function to start the countdown timer
+    function startCountdown() {
+      if (!timerStarted) {
+        timerStarted = true;
+        countdownInterval = setInterval(function () {
+          let minutes = Math.floor(timer / 60);
+          let seconds = timer % 60;
+
+          minutes = minutes < 10 ? `0${minutes}` : minutes;
+          seconds = seconds < 10 ? `0${seconds}` : seconds;
+
+          timerElement.textContent = `Time Remaining: ${minutes}:${seconds}`;
+
+          // Update the progress bar width
+          const progressPercentage = (timer / (3 * 60)) * 100;
+          progressBar.style.width = `${progressPercentage}%`;
+
+          if (--timer < 0) {
+            clearInterval(countdownInterval);
+            timerElement.textContent = "Time's up!";
+            progressBar.style.width = "0%"; // Ensure the bar is completely empty when time's up
+            timerStarted = false;
+          }
+        }, 1000);
+      }
+    }
+
+    // Function to update timer display without starting the countdown
+    function updateTimerDisplay() {
+      let minutes = Math.floor(timer / 60);
+      let seconds = timer % 60;
+      minutes = minutes < 10 ? `0${minutes}` : minutes;
+      seconds = seconds < 10 ? `0${seconds}` : seconds;
+      timerElement.textContent = `Time Remaining: ${minutes}:${seconds}`;
+      progressBar.style.width = `${(timer / (3 * 60)) * 100}%`;
+    }
+
+    // Add event listeners
+    generateButton.addEventListener("click", generateDepartment);
+    timerElement.addEventListener("click", startCountdown);
+    restartButton.addEventListener("click", () => {
+      // Reset the timer to 3 minutes and update the display
+      timer = 3 * 60;
+      updateTimerDisplay();
+    });
+  </script>
+</body>
+</html>
