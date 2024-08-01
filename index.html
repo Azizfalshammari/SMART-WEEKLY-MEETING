@@ -173,7 +173,7 @@
       <div class="department">The Department</div>
     </div>
     <button class="button" id="generateButton">Find Speaker</button>
-    <div id="timer">Remaining Time: 03:00</div>
+    <div id="timer">Remaining Time: 02:30</div>
     <div class="progress-bar">
       <div class="progress"></div>
     </div>
@@ -252,7 +252,7 @@
     // Function to start or resume the countdown timer
     function startCountdown() {
       if (!timerPaused) {
-        remainingTime = 3 * 60; // Reset time to 3 minutes
+        remainingTime = 2.5 * 60; // Reset time to 3 minutes
         clearInterval(countdownInterval); // Clear any existing interval
       }
       timerPaused = false;
@@ -267,7 +267,7 @@
         timerElement.textContent = `Time Remaining: ${minutes}:${seconds}`;
   
         // Update the progress bar width
-        const progressPercentage = (remainingTime / (3 * 60)) * 100;
+        const progressPercentage = (remainingTime / (2.5 * 60)) * 100;
         progressBar.style.width = `${progressPercentage}%`;
   
         if (--remainingTime < 0) {
