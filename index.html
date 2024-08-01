@@ -216,7 +216,7 @@
     const pauseTimerButton = document.getElementById("pauseTimer");
   
     let countdownInterval;
-    let remainingTime = 3 * 60; // 3 minutes in seconds
+    let remainingTime = 2.5 * 60; // 3 minutes in seconds
     let timerPaused = false;
   
     // Function to generate and display a department
@@ -292,8 +292,8 @@
     function resetTimer() {
       clearInterval(countdownInterval);
       timerPaused = false;
-      remainingTime = 3 * 60; // Reset time to 3 minutes
-      timerElement.textContent = `Time Remaining: 03:00`;
+      remainingTime = 2.5 * 60; // Reset time to 3 minutes
+      timerElement.textContent = `Time Remaining: 02:30`;
       progressBar.style.width = "100%"; // Reset progress bar to full
   
       // Forcefully remove highlights from both buttons
